@@ -53,11 +53,18 @@ resource "aws_s3_bucket_object" "s3BucketExampleDirectory" {
 resource "aws_lambda_function" "lambdaExample" {
   function_name = "${var.prefix}-lambda-test"
   filename = "../lambda-example/target/lambda-0.0.1-SNAPSHOT.jar"
+  source_code_hash = filebase64sha256("../lambda-example/target/lambda-0.0.1-SNAPSHOT.jar")
   runtime = "java11"
   handler = "pl.fissst.codeandcoffee.lambda.ExampleRequestHandler"
   role = "arn:aws:iam::12345:role/ignoreme"
   memory_size = 512
   timeout = 5
+
+  environment {
+    variables = {
+      RUN_PROFILE = "local"
+    }
+  }
 }
 
 resource "aws_s3_bucket_notification" "lambdaS3NotificationExample" {
@@ -66,6 +73,5 @@ resource "aws_s3_bucket_notification" "lambdaS3NotificationExample" {
   lambda_function {
     lambda_function_arn = aws_lambda_function.lambdaExample.arn
     events = ["s3:ObjectCreated:*"]
-    filter_prefix = "directory1/"
   }
 }

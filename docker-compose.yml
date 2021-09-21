@@ -1,0 +1,16 @@
+version: '3'
+services:
+  localstack:
+    image: localstack/localstack:0.12.17.5
+    ports:
+      - 4566:4566
+    environment:
+      - SERVICES=s3,lambda,serverless,sqs
+      - AWS_DEFAULT_REGION=eu-central-1
+      - EDGE_PORT=4566
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - LAMBDA_DOCKER_NETWORK=localstack_example_network
+      - HOSTNAME_EXTERNAL=localstack
+    volumes:
+    - "/tmp/ls_tmp:/tmp/localstack"
+    - "/var/run/docker.sock:/var/run/docker.sock"
